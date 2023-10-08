@@ -8,6 +8,7 @@ SKIP2:
 ' TT$ = "F:\GREGOR~1\DIARY.LOG\GREGORY\GDD" 'Example
 TT$ = "C:\Users\Ethan\Documents\GitHub\DIARY.LOG\GREGORY\GDD"
 LOG_INDEX = 0
+STOP_AT_INDEX = 59
 JUMP:
 SKIP = 0
 Cls
@@ -65,7 +66,6 @@ Color 15: Locate 22, 2: Print "Press "; Chr$(24); " as up and "; Chr$(25); " as 
 Do
     ' Automate pressing down to continue reading.
     If LOG_INDEX > 0 Then A$ = Chr$(0) + Chr$(80)
-    LOG_INDEX = LOG_INDEX + 1
 
     If A$ = Chr$(0) + Chr$(72) Then Z = Z - 1
     If A$ = Chr$(0) + Chr$(80) Then Z = Z + 1
@@ -88,12 +88,21 @@ Do
     If ok$ = "Y" Then Locate 5 + Z, 2: Color 10, 0: Print n$(Z); Tab(15); DE$(Z); Tab(45); D$(Z); Tab(60); T$(Z)
     Color 0, 0
 
-    ' Automate "ENTER" inkey to continue reading.
-    A$ = Chr$(13)
+    If LOG_INDEX < STOP_AT_INDEX Then
+        ' Automate "ENTER" inkey to continue reading.
+        A$ = Chr$(13)
+        LOG_INDEX = LOG_INDEX + 1
+    Else
+        ' Automate program end.
+        A$ = Chr$(27)
+    End If
+
 Loop Until A$ = Chr$(27) Or A$ = Chr$(13)
+If A$ = Chr$(27) Then Stop
 R$ = "N"
 If A$ = Chr$(13) Then R$ = "Y": GoSub reading:
 If R$ = "Y" Then GoTo RERUN
+
 GoTo JUMP:
 WRITELOG:
 SKIP = 0
@@ -490,4 +499,3 @@ Loop Until K$ = Chr$(27)
 Cls
 GoSub listing:
 Return
-
