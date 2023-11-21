@@ -1,477 +1,525 @@
-_FULLSCREEN
-SCREEN 0, 0, 0: WIDTH 80: CLS : BEEP
-LOCATE , , , 5
+Screen 0, 0, 0: Width 80: Cls: Beep
+Locate , , , 5
 h = 1: v = 1: C = 0: hm = 1: vm = 0: CAP$ = "": l = 1
-DIM LIN$(15), CH$(780), l$(10), D$(15), T$(15), DE$(15), DIT$(25), n$(15)
-CLS
-PRINT "Enter Password, please?"
+' Dim LIN$(15),
+Dim CH$(780), l$(10), D$(15), T$(15), DE$(15), DIT$(25), n$(15)
+Cls
+Print "Enter Password, please?"
 SKIP2:
 ' TT$ = "F:\GREGOR~1\DIARY.LOG\GREGORY\GDD" 'Example
 TT$ = "C:\Users\Ethan\Documents\GitHub\DIARY.LOG\GREGORY\GDD"
+' Decrypted log file name.
+DLF$ = "C:\Users\Ethan\Documents\GitHub\DIARY.LOG\2023\DECRYPTED.TXT"
+
+' Clear the decrypted log file.
+Open DLF$ For Output As #1
+Print #1, ""
+Close #1
+
+LOG_INDEX = 0
+STOP_AT_INDEX = 59
 JUMP:
 SKIP = 0
-CLS
-ON ERROR GOTO E:
-FOR B = 1 TO 99999
-fil = B
-fil$ = STRING$(5 - LEN(LTRIM$(STR$((fil)))), "0") + LTRIM$(STR$(fil))
-F$ = TT$ + fil$ + ".LOG"
-OPEN F$ FOR INPUT AS #1
-CLOSE #1
-IF SKIP = 2 THEN GOTO T:
-NEXT B
+Cls
+On Error GoTo E:
+For B = 1 To 99999
+    fil = B
+    fil$ = String$(5 - Len(LTrim$(Str$((fil)))), "0") + LTrim$(Str$(fil))
+    F$ = TT$ + fil$ + ".LOG"
+    Open F$ For Input As #1
+    Close #1
+    If SKIP = 2 Then GoTo T:
+Next B
 T:
-COLOR 31: LOCATE 2, 2: PRINT "THIS IS MAIN MENU LOG..."
-COLOR 14: LOCATE 3, 2: PRINT STRING$(78, 196)
-COLOR 25: LOCATE 4, 2: PRINT "Commands"
-COLOR 26: LOCATE 9, 2: PRINT "R"; : COLOR 10: PRINT "ead"; : COLOR 15: PRINT "................... read your own logs"
-COLOR 28: LOCATE 13, 2: PRINT "W"; : COLOR 12: PRINT "rite"; : COLOR 15: PRINT ".................. make your own logs"
-COLOR 31: LOCATE 17, 2: PRINT "Q"; : COLOR 15: PRINT "uit"; : COLOR 15: PRINT "................... end the program"
-COLOR 15: LOCATE 2, 50: PRINT "YOU HAVE"; B - 1; "LOGS"
-DO
-'gosub w
-K$ = INKEY$
-K$ = UCASE$(K$)
-LOOP UNTIL K$ = "R" OR K$ = "W" OR K$ = "Q"
-IF K$ = "Q" THEN END
-IF K$ = "R" THEN GOTO READLOG:
-IF K$ = "W" THEN GOTO WRITELOG:
-GOTO JUMP:
+Color 31: Locate 2, 2: Print "THIS IS MAIN MENU LOG..."
+Color 14: Locate 3, 2: Print String$(78, 196)
+Color 25: Locate 4, 2: Print "Commands"
+Color 26: Locate 9, 2: Print "R";: Color 10: Print "ead";: Color 15: Print "................... read your own logs"
+Color 28: Locate 13, 2: Print "W";: Color 12: Print "rite";: Color 15: Print ".................. make your own logs"
+Color 31: Locate 17, 2: Print "Q";: Color 15: Print "uit";: Color 15: Print "................... end the program"
+Color 15: Locate 2, 50: Print "YOU HAVE"; B - 1; "LOGS"
+Do
+    'gosub w
+    K$ = InKey$
+    K$ = UCase$(K$)
+
+    ' Automate "R" inkey to continue reading.
+    K$ = "R"
+
+Loop Until K$ = "R" Or K$ = "W" Or K$ = "Q"
+If K$ = "Q" Then End
+If K$ = "R" Then GoTo READLOG:
+If K$ = "W" Then GoTo WRITELOG:
+GoTo JUMP:
 READLOG:
 reading = fil - 1
 listing = reading
-IF reading > 15 THEN
-number = 15
-listing = 15
-ELSE
-number = reading
-listing = reading
-END IF
+If reading > 15 Then
+    number = 15
+    listing = 15
+Else
+    number = reading
+    listing = reading
+End If
 LISTS = 1: Z = 1
-CLS
-GOSUB listing:
-LOCATE 5 + Z, 2: COLOR 14, 9: PRINT n$(Z); TAB(15); DE$(Z); TAB(45); D$(Z); TAB(60); T$(Z): COLOR 0, 0
+Cls
+GoSub listing:
+Locate 5 + Z, 2: Color 14, 9: Print n$(Z); Tab(15); DE$(Z); Tab(45); D$(Z); Tab(60); T$(Z): Color 0, 0
 RERUN:
-COLOR 31: LOCATE 2, 2: PRINT "READING YOUR LOGS"; : COLOR 15: PRINT TAB(55); " YOU HAVE"; reading; "LOGS."
-COLOR 14: LOCATE 3, 2: PRINT STRING$(78, 196)
-COLOR 11: LOCATE 4, 2: PRINT "LOGS"; TAB(15); "Type of Log"; TAB(45); "Date"; TAB(60); "Time"
-COLOR 12: LOCATE 5, 2: PRINT STRING$(78, 196)
-COLOR 12: LOCATE 21, 2: PRINT STRING$(78, 196)
-COLOR 15: LOCATE 22, 2: PRINT "Press "; CHR$(24); " as up and "; CHR$(25); " as down and Press ENTER to read"; : COLOR 31: PRINT TAB(60); "Press Esc to Quit"
-DO
-'
-IF A$ = CHR$(0) + CHR$(72) THEN Z = Z - 1
-IF A$ = CHR$(0) + CHR$(80) THEN Z = Z + 1
-IF A$ = CHR$(0) + CHR$(73) THEN Z = 0
-IF A$ = CHR$(0) + CHR$(81) THEN Z = 16
-IF Z = 0 AND LISTS = 1 THEN Z = 1
-IF Z = 0 AND LISTS <> 1 THEN Z = 1: LISTS = LISTS - 15: GOSUB listing
-IF Z = reading - LISTS + 2 THEN Z = reading - LISTS + 1
-IF Z = 16 THEN
-Z = 1
-LISTS = LISTS + 15
-IF LISTS > reading THEN LISTS = LISTS - 15
-GOSUB listing
-END IF
-IF ok$ = "Y" THEN LOCATE 5 + Z, 2: COLOR 14, 9: PRINT n$(Z); TAB(15); DE$(Z); TAB(45); D$(Z); TAB(60); T$(Z): COLOR 0, 0
-ok$ = "N"
-A$ = INKEY$
-IF A$ = CHR$(0) + CHR$(72) THEN ok$ = "Y"
-IF A$ = CHR$(0) + CHR$(80) THEN ok$ = "Y"
-IF ok$ = "Y" THEN LOCATE 5 + Z, 2: COLOR 10, 0: PRINT n$(Z); TAB(15); DE$(Z); TAB(45); D$(Z); TAB(60); T$(Z)
-COLOR 0, 0
-LOOP UNTIL A$ = CHR$(27) OR A$ = CHR$(13)
-R$ = "N"
-IF A$ = CHR$(13) THEN R$ = "Y": GOSUB reading:
-IF R$ = "Y" THEN GOTO RERUN
-GOTO JUMP:
+Color 31: Locate 2, 2: Print "READING YOUR LOGS";: Color 15: Print Tab(55); " YOU HAVE"; reading; "LOGS."
+Color 14: Locate 3, 2: Print String$(78, 196)
+Color 11: Locate 4, 2: Print "LOGS"; Tab(15); "Type of Log"; Tab(45); "Date"; Tab(60); "Time"
+Color 12: Locate 5, 2: Print String$(78, 196)
+Color 12: Locate 21, 2: Print String$(78, 196)
+Color 15: Locate 22, 2: Print "Press "; Chr$(24); " as up and "; Chr$(25); " as down and Press ENTER to read";: Color 31: Print Tab(60); "Press Esc to Quit"
+Do
+    ' Automate pressing down to continue reading.
+    If LOG_INDEX > 0 Then A$ = Chr$(0) + Chr$(80)
+
+    If A$ = Chr$(0) + Chr$(72) Then Z = Z - 1
+    If A$ = Chr$(0) + Chr$(80) Then Z = Z + 1
+    If A$ = Chr$(0) + Chr$(73) Then Z = 0
+    If A$ = Chr$(0) + Chr$(81) Then Z = 16
+    If Z = 0 And LISTS = 1 Then Z = 1
+    If Z = 0 And LISTS <> 1 Then Z = 1: LISTS = LISTS - 15: GoSub listing
+    If Z = reading - LISTS + 2 Then Z = reading - LISTS + 1
+    If Z = 16 Then
+        Z = 1
+        LISTS = LISTS + 15
+        If LISTS > reading Then LISTS = LISTS - 15
+        GoSub listing
+    End If
+    If ok$ = "Y" Then Locate 5 + Z, 2: Color 14, 9: Print n$(Z); Tab(15); DE$(Z); Tab(45); D$(Z); Tab(60); T$(Z): Color 0, 0
+    ok$ = "N"
+    A$ = InKey$
+    If A$ = Chr$(0) + Chr$(72) Then ok$ = "Y"
+    If A$ = Chr$(0) + Chr$(80) Then ok$ = "Y"
+    If ok$ = "Y" Then Locate 5 + Z, 2: Color 10, 0: Print n$(Z); Tab(15); DE$(Z); Tab(45); D$(Z); Tab(60); T$(Z)
+    Color 0, 0
+
+    If LOG_INDEX < STOP_AT_INDEX Then
+        ' Automate "ENTER" inkey to continue reading.
+        A$ = Chr$(13)
+        LOG_INDEX = LOG_INDEX + 1
+    Else
+        ' Automate program end.
+        A$ = Chr$(27)
+    End If
+Loop Until A$ = Chr$(27) Or A$ = Chr$(13)
+If A$ = Chr$(27) Then Stop
+If A$ = Chr$(13) Then R$ = "Y": GoSub reading:
+If R$ = "Y" Then GoTo RERUN
+
+GoTo JUMP:
 WRITELOG:
 SKIP = 0
-ON ERROR GOTO THATIT:
-FOR B = 1 TO 99999
-fil = B
-fil$ = STRING$(5 - LEN(LTRIM$(STR$((fil)))), "0") + LTRIM$(STR$(fil))
-F$ = TT$ + fil$ + ".LOG"
-OPEN F$ FOR INPUT AS #1
-CLOSE #1
-IF SKIP = 1 THEN GOTO SKIP
-NEXT B
+On Error GoTo THATIT:
+For B = 1 To 99999
+    fil = B
+    fil$ = String$(5 - Len(LTrim$(Str$((fil)))), "0") + LTrim$(Str$(fil))
+    F$ = TT$ + fil$ + ".LOG"
+    Open F$ For Input As #1
+    Close #1
+    If SKIP = 1 Then GoTo SKIP
+Next B
 SKIP:
 NEWLOG = B
-FOR B = 1 TO 780: CH$(B) = "": NEXT B
-T$ = "": D$ = "": DE$ = "": FOR B = 1 TO 25: DI$(B) = "": NEXT B
-CLS
-COLOR 31: LOCATE 2, 2: PRINT "This is Writing Log"
-COLOR 14: LOCATE 3, 2: PRINT STRING$(78, 196)
-COLOR 13: LOCATE 4, 2: PRINT "DATE: "; DATE$; TAB(30); "LOG: "; LOG$; TAB(60); "TIME: "; TIME$
-COLOR 14: LOCATE 5, 2: PRINT STRING$(78, 196)
-COLOR 14: LOCATE 16, 2: PRINT STRING$(78, 196)
+For B = 1 To 780: CH$(B) = "": Next B
+T$ = "": D$ = "": DE$ = "": For B = 1 To 25: DI$(B) = "": Next B
+Cls
+Color 31: Locate 2, 2: Print "This is Writing Log"
+Color 14: Locate 3, 2: Print String$(78, 196)
+Color 13: Locate 4, 2: Print "DATE: "; Date$; Tab(30); "LOG: "; LOG$; Tab(60); "TIME: "; Time$
+Color 14: Locate 5, 2: Print String$(78, 196)
+Color 14: Locate 16, 2: Print String$(78, 196)
 LOGS = NEWLOG
-NEWLOG$ = STRING$(5 - LEN(LTRIM$(STR$((LOGS)))), "0") + LTRIM$(STR$(LOGS))
-LOCATE 22, 2: COLOR 31: PRINT "PRESS ESC TO QUIT"
-LOCATE 17, 2: COLOR 15: PRINT "The new log is "; NEWLOG$
-LOCATE 18, 2: COLOR 7: PRINT "Accepted Yes, No (Y/N)";
-DO:  A$ = INKEY$: A$ = UCASE$(A$): LOOP UNTIL A$ = "Y" OR A$ = "N" OR A$ = CHR$(27)
-IF A$ = CHR$(27) THEN GOTO JUMP
-IF A$ = "Y" THEN LOG$ = NEWLOG$
-IF A$ = "Y" THEN COLOR 13: LOCATE 4, 2: PRINT "DATE: "; DATE$; TAB(30); "LOG: "; LOG$; TAB(60); "TIME: "; TIME$
-IF A$ = "N" THEN GOTO JUMP
-COLOR 7: LOCATE 17, 2: PRINT "Type your log between the 2 yellow lines"
-LOCATE 18, 2: PRINT "Press ESC when you are done"
-LOCATE 22, 2: COLOR 31, 0: PRINT STRING$(78, 32)
+NEWLOG$ = String$(5 - Len(LTrim$(Str$((LOGS)))), "0") + LTrim$(Str$(LOGS))
+Locate 22, 2: Color 31: Print "PRESS ESC TO QUIT"
+Locate 17, 2: Color 15: Print "The new log is "; NEWLOG$
+Locate 18, 2: Color 7: Print "Accepted Yes, No (Y/N)";
+Do: A$ = InKey$: A$ = UCase$(A$): Loop Until A$ = "Y" Or A$ = "N" Or A$ = Chr$(27)
+If A$ = Chr$(27) Then GoTo JUMP
+If A$ = "Y" Then LOG$ = NEWLOG$
+If A$ = "Y" Then Color 13: Locate 4, 2: Print "DATE: "; Date$; Tab(30); "LOG: "; LOG$; Tab(60); "TIME: "; Time$
+If A$ = "N" Then GoTo JUMP
+Color 7: Locate 17, 2: Print "Type your log between the 2 yellow lines"
+Locate 18, 2: Print "Press ESC when you are done"
+Locate 22, 2: Color 31, 0: Print String$(78, 32)
 l = 1: CH = 1
-DO
-IF A$ = CHR$(0) + CHR$(72) THEN l = l - 1: ok$ = "N"
-IF l = 0 THEN l = 10
-IF A$ = CHR$(0) + CHR$(80) THEN l = l + 1: ok$ = "N"
-IF A$ = CHR$(13) THEN l = l + 1: CH = 1: ok$ = "N"
-IF l = 11 THEN l = 1
-IF A$ = CHR$(0) + CHR$(75) THEN CH = CH - 1: ok$ = "N"
-IF A$ = CHR$(8) THEN CH = CH - 1: ok$ = "N"
-IF CH = 0 THEN CH = 78: l = l - 1: IF l = 0 THEN l = 10
-IF A$ = CHR$(0) + CHR$(77) THEN CH = CH + 1: ok$ = "N"
-IF CH = 79 THEN CH = 1: l = l + 1: IF l = 11 THEN l = 1
-IF A$ = CHR$(27) THEN ok$ = "N"
-IF l = 79 THEN CH = 1: l = l + 1
-IF l = 11 THEN l = 1
-IF ok$ = "Y" THEN LOCATE l + 5, CH + 1: COLOR 7: PRINT A$
-IF ok$ = "Y" AND A$ <> "" THEN CH$((l - 1) * 78 + CH) = A$
-'GOSUB W
-IF ok$ = "Y" AND A$ <> "" THEN CH = CH + 1
-A$ = INKEY$: ok$ = "Y"
-A$ = UCASE$(A$)
-LOOP UNTIL A$ = CHR$(27)
-LOCATE 22, 2: COLOR 31: PRINT "Press ESC to quit without saving"
-LOCATE 17, 2: COLOR 7: PRINT "Enter your description for this whole log, summary it in 25 letters."
-LOCATE 18, 2: PRINT "Press ENTER when you are done."
+Do
+    If A$ = Chr$(0) + Chr$(72) Then l = l - 1: ok$ = "N"
+    If l = 0 Then l = 10
+    If A$ = Chr$(0) + Chr$(80) Then l = l + 1: ok$ = "N"
+    If A$ = Chr$(13) Then l = l + 1: CH = 1: ok$ = "N"
+    If l = 11 Then l = 1
+    If A$ = Chr$(0) + Chr$(75) Then CH = CH - 1: ok$ = "N"
+    If A$ = Chr$(8) Then CH = CH - 1: ok$ = "N"
+    If CH = 0 Then CH = 78: l = l - 1: If l = 0 Then l = 10
+    If A$ = Chr$(0) + Chr$(77) Then CH = CH + 1: ok$ = "N"
+    If CH = 79 Then CH = 1: l = l + 1: If l = 11 Then l = 1
+    If A$ = Chr$(27) Then ok$ = "N"
+    If l = 79 Then CH = 1: l = l + 1
+    If l = 11 Then l = 1
+    If ok$ = "Y" Then Locate l + 5, CH + 1: Color 7: Print A$
+    If ok$ = "Y" And A$ <> "" Then CH$((l - 1) * 78 + CH) = A$
+    'GOSUB W
+    If ok$ = "Y" And A$ <> "" Then CH = CH + 1
+    A$ = InKey$: ok$ = "Y"
+    A$ = UCase$(A$)
+Loop Until A$ = Chr$(27)
+Locate 22, 2: Color 31: Print "Press ESC to quit without saving"
+Locate 17, 2: Color 7: Print "Enter your description for this whole log, summary it in 25 letters."
+Locate 18, 2: Print "Press ENTER when you are done."
 LOCTE = 1
-DO
-IF ok$ = "OK" THEN LOCTE = LOCTE + 1
-ok$ = ""
-'GOSUB W
-A$ = INKEY$
-A$ = UCASE$(A$)
-IF A$ <> "" THEN ok$ = "OK"
-IF A$ = CHR$(13) THEN ok$ = ""
-IF A$ = CHR$(8) THEN LOCTE = LOCTE - 1: ok$ = ""
-IF A$ = CHR$(27) THEN ok$ = ""
-IF LOCTE < 2 THEN LOCTE = 2
-IF LOCTE > 25 THEN LOCTE = 2
-LOCATE 20, LOCTE: COLOR 13
-IF ok$ = "OK" THEN PRINT A$
-IF ok$ = "OK" THEN DIT$(LOCTE - 1) = A$
-LOOP UNTIL A$ = CHR$(13) OR A$ = CHR$(27)
-IF A$ = CHR$(27) THEN GOTO JUMP
-FOR B = 1 TO 25: DE$ = DE$ + DIT$(B): NEXT B
-FOR B = 1 TO 780
-C$ = CH$(B)
-GOSUB CHANGEWORDSTOCHARACTERS:
-CH$(B) = C$
-NEXT B
-FOR B = 1 TO 10: l$(B) = "": NEXT B
+Do
+    If ok$ = "OK" Then LOCTE = LOCTE + 1
+    ok$ = ""
+    'GOSUB W
+    A$ = InKey$
+    A$ = UCase$(A$)
+    If A$ <> "" Then ok$ = "OK"
+    If A$ = Chr$(13) Then ok$ = ""
+    If A$ = Chr$(8) Then LOCTE = LOCTE - 1: ok$ = ""
+    If A$ = Chr$(27) Then ok$ = ""
+    If LOCTE < 2 Then LOCTE = 2
+    If LOCTE > 25 Then LOCTE = 2
+    Locate 20, LOCTE: Color 13
+    If ok$ = "OK" Then Print A$
+    If ok$ = "OK" Then DIT$(LOCTE - 1) = A$
+Loop Until A$ = Chr$(13) Or A$ = Chr$(27)
+If A$ = Chr$(27) Then GoTo JUMP
+For B = 1 To 25: DE$ = DE$ + DIT$(B): Next B
+For B = 1 To 780
+    C$ = CH$(B)
+    GoSub CHANGEWORDSTOCHARACTERS:
+    CH$(B) = C$
+Next B
+For B = 1 To 10: l$(B) = "": Next B
 q$ = ""
-FOR B = 1 TO 10: FOR W = 1 TO 78
-l$(B) = l$(B) + CH$(W + ((B - 1) * 78))
-NEXT W: NEXT B
+For B = 1 To 10: For W = 1 To 78
+        l$(B) = l$(B) + CH$(W + ((B - 1) * 78))
+Next W: Next B
 F$ = TT$ + LOG$ + ".LOG"
-D$ = DATE$: T$ = TIME$
-FOR B = 1 TO LEN(D$)
-C$ = MID$(D$, B, 1)
-GOSUB CHANGEWORDSTOCHARACTERS:
-q$ = q$ + C$
-NEXT B
+D$ = Date$: T$ = Time$
+For B = 1 To Len(D$)
+    C$ = Mid$(D$, B, 1)
+    GoSub CHANGEWORDSTOCHARACTERS:
+    q$ = q$ + C$
+Next B
 D$ = q$
 q$ = ""
-FOR B = 1 TO LEN(T$)
-C$ = MID$(T$, B, 1)
-GOSUB CHANGEWORDSTOCHARACTERS:
-q$ = q$ + C$
-NEXT B
+For B = 1 To Len(T$)
+    C$ = Mid$(T$, B, 1)
+    GoSub CHANGEWORDSTOCHARACTERS:
+    q$ = q$ + C$
+Next B
 T$ = q$
 q$ = ""
-FOR B = 1 TO LEN(DE$)
-C$ = MID$(DE$, B, 1)
-GOSUB CHANGEWORDSTOCHARACTERS:
-q$ = q$ + C$
-NEXT B
+For B = 1 To Len(DE$)
+    C$ = Mid$(DE$, B, 1)
+    GoSub CHANGEWORDSTOCHARACTERS:
+    q$ = q$ + C$
+Next B
 DE$ = q$
-OPEN F$ FOR OUTPUT AS #1
-PRINT #1, D$
-PRINT #1, T$
-PRINT #1, DE$
-FOR B = 1 TO 10
-PRINT #1, l$(B)
-NEXT B
-CLOSE #1
-GOTO JUMP
+Open F$ For Output As #1
+Print #1, D$
+Print #1, T$
+Print #1, DE$
+For B = 1 To 10
+    Print #1, l$(B)
+Next B
+Close #1
+GoTo JUMP
 CHANGECHARACTERSTOWORDS:
-IF C$ = CHR$(250) THEN C$ = " "
-IF C$ = CHR$(32) THEN C$ = " "
-IF C$ = CHR$(218) THEN C$ = "A"
-IF C$ = CHR$(187) THEN C$ = "B"
-IF C$ = CHR$(197) THEN C$ = "C"
-IF C$ = CHR$(205) THEN C$ = "D"
-IF C$ = CHR$(210) THEN C$ = "E"
-IF C$ = CHR$(204) THEN C$ = "F"
-IF C$ = CHR$(179) THEN C$ = "G"
-IF C$ = CHR$(192) THEN C$ = "H"
-IF C$ = CHR$(180) THEN C$ = "I"
-IF C$ = CHR$(203) THEN C$ = "J"
-IF C$ = CHR$(215) THEN C$ = "K"
-IF C$ = CHR$(206) THEN C$ = "L"
-IF C$ = CHR$(189) THEN C$ = "M"
-IF C$ = CHR$(202) THEN C$ = "N"
-IF C$ = CHR$(212) THEN C$ = "O"
-IF C$ = CHR$(183) THEN C$ = "P"
-IF C$ = CHR$(188) THEN C$ = "Q"
-IF C$ = CHR$(217) THEN C$ = "R"
-IF C$ = CHR$(199) THEN C$ = "S"
-IF C$ = CHR$(194) THEN C$ = "T"
-IF C$ = CHR$(181) THEN C$ = "U"
-IF C$ = CHR$(185) THEN C$ = "V"
-IF C$ = CHR$(184) THEN C$ = "W"
-IF C$ = CHR$(208) THEN C$ = "X"
-IF C$ = CHR$(216) THEN C$ = "Y"
-IF C$ = CHR$(207) THEN C$ = "Z"
-IF C$ = CHR$(209) THEN C$ = "0"
-IF C$ = CHR$(211) THEN C$ = "1"
-IF C$ = CHR$(213) THEN C$ = "2"
-IF C$ = CHR$(214) THEN C$ = "3"
-IF C$ = CHR$(182) THEN C$ = "4"
-IF C$ = CHR$(186) THEN C$ = "5"
-IF C$ = CHR$(190) THEN C$ = "6"
-IF C$ = CHR$(201) THEN C$ = "7"
-IF C$ = CHR$(196) THEN C$ = "8"
-IF C$ = CHR$(195) THEN C$ = "9"
-IF C$ = CHR$(169) THEN C$ = "&"
-IF C$ = CHR$(198) THEN C$ = "#"
-IF C$ = CHR$(244) THEN C$ = "["
-IF C$ = CHR$(245) THEN C$ = "]"
-IF C$ = CHR$(200) THEN C$ = "$"
-IF C$ = CHR$(191) THEN C$ = "!"
-IF C$ = CHR$(168) THEN C$ = "%"
-IF C$ = CHR$(247) THEN C$ = ";"
-IF C$ = CHR$(229) THEN C$ = "^"
-IF C$ = CHR$(227) THEN C$ = "."
-IF C$ = CHR$(225) THEN C$ = ","
-IF C$ = CHR$(231) THEN C$ = ":"
-IF C$ = CHR$(234) THEN C$ = "/"
-IF C$ = CHR$(173) THEN C$ = "("
-IF C$ = CHR$(171) THEN C$ = ")"
-IF C$ = CHR$(246) THEN C$ = "="
-IF C$ = CHR$(232) THEN C$ = "+"
-IF C$ = CHR$(228) THEN C$ = CHR$(34)
-IF C$ = CHR$(221) THEN C$ = "\"
-IF C$ = CHR$(238) THEN C$ = "<"
-IF C$ = CHR$(239) THEN C$ = ">"
-IF C$ = CHR$(224) THEN C$ = "?"
-IF C$ = CHR$(170) THEN C$ = "*"
-IF C$ = CHR$(193) THEN C$ = "@"
-IF C$ = CHR$(172) THEN C$ = "-"
-IF C$ = CHR$(240) THEN C$ = "_"
-IF C$ = CHR$(237) THEN C$ = "'"
-RETURN
+If C$ = Chr$(250) Then C$ = " "
+If C$ = Chr$(32) Then C$ = " "
+If C$ = Chr$(218) Then C$ = "A"
+If C$ = Chr$(187) Then C$ = "B"
+If C$ = Chr$(197) Then C$ = "C"
+If C$ = Chr$(205) Then C$ = "D"
+If C$ = Chr$(210) Then C$ = "E"
+If C$ = Chr$(204) Then C$ = "F"
+If C$ = Chr$(179) Then C$ = "G"
+If C$ = Chr$(192) Then C$ = "H"
+If C$ = Chr$(180) Then C$ = "I"
+If C$ = Chr$(203) Then C$ = "J"
+If C$ = Chr$(215) Then C$ = "K"
+If C$ = Chr$(206) Then C$ = "L"
+If C$ = Chr$(189) Then C$ = "M"
+If C$ = Chr$(202) Then C$ = "N"
+If C$ = Chr$(212) Then C$ = "O"
+If C$ = Chr$(183) Then C$ = "P"
+If C$ = Chr$(188) Then C$ = "Q"
+If C$ = Chr$(217) Then C$ = "R"
+If C$ = Chr$(199) Then C$ = "S"
+If C$ = Chr$(194) Then C$ = "T"
+If C$ = Chr$(181) Then C$ = "U"
+If C$ = Chr$(185) Then C$ = "V"
+If C$ = Chr$(184) Then C$ = "W"
+If C$ = Chr$(208) Then C$ = "X"
+If C$ = Chr$(216) Then C$ = "Y"
+If C$ = Chr$(207) Then C$ = "Z"
+If C$ = Chr$(209) Then C$ = "0"
+If C$ = Chr$(211) Then C$ = "1"
+If C$ = Chr$(213) Then C$ = "2"
+If C$ = Chr$(214) Then C$ = "3"
+If C$ = Chr$(182) Then C$ = "4"
+If C$ = Chr$(186) Then C$ = "5"
+If C$ = Chr$(190) Then C$ = "6"
+If C$ = Chr$(201) Then C$ = "7"
+If C$ = Chr$(196) Then C$ = "8"
+If C$ = Chr$(195) Then C$ = "9"
+If C$ = Chr$(169) Then C$ = "&"
+If C$ = Chr$(198) Then C$ = "#"
+If C$ = Chr$(244) Then C$ = "["
+If C$ = Chr$(245) Then C$ = "]"
+If C$ = Chr$(200) Then C$ = "$"
+If C$ = Chr$(191) Then C$ = "!"
+If C$ = Chr$(168) Then C$ = "%"
+If C$ = Chr$(247) Then C$ = ";"
+If C$ = Chr$(229) Then C$ = "^"
+If C$ = Chr$(227) Then C$ = "."
+If C$ = Chr$(225) Then C$ = ","
+If C$ = Chr$(231) Then C$ = ":"
+If C$ = Chr$(234) Then C$ = "/"
+If C$ = Chr$(173) Then C$ = "("
+If C$ = Chr$(171) Then C$ = ")"
+If C$ = Chr$(246) Then C$ = "="
+If C$ = Chr$(232) Then C$ = "+"
+If C$ = Chr$(228) Then C$ = Chr$(34)
+If C$ = Chr$(221) Then C$ = "\"
+If C$ = Chr$(238) Then C$ = "<"
+If C$ = Chr$(239) Then C$ = ">"
+If C$ = Chr$(224) Then C$ = "?"
+If C$ = Chr$(170) Then C$ = "*"
+If C$ = Chr$(193) Then C$ = "@"
+If C$ = Chr$(172) Then C$ = "-"
+If C$ = Chr$(240) Then C$ = "_"
+If C$ = Chr$(237) Then C$ = "'"
+Return
 CHANGEWORDSTOCHARACTERS:
-IF C$ = "" THEN C$ = CHR$(250)
-IF C$ = " " THEN C$ = CHR$(32)
-IF C$ = "A" THEN C$ = CHR$(218)
-IF C$ = "B" THEN C$ = CHR$(187)
-IF C$ = "C" THEN C$ = CHR$(197)
-IF C$ = "D" THEN C$ = CHR$(205)
-IF C$ = "E" THEN C$ = CHR$(210)
-IF C$ = "F" THEN C$ = CHR$(204)
-IF C$ = "G" THEN C$ = CHR$(179)
-IF C$ = "H" THEN C$ = CHR$(192)
-IF C$ = "I" THEN C$ = CHR$(180)
-IF C$ = "J" THEN C$ = CHR$(203)
-IF C$ = "K" THEN C$ = CHR$(215)
-IF C$ = "L" THEN C$ = CHR$(206)
-IF C$ = "M" THEN C$ = CHR$(189)
-IF C$ = "N" THEN C$ = CHR$(202)
-IF C$ = "O" THEN C$ = CHR$(212)
-IF C$ = "P" THEN C$ = CHR$(183)
-IF C$ = "Q" THEN C$ = CHR$(188)
-IF C$ = "R" THEN C$ = CHR$(217)
-IF C$ = "S" THEN C$ = CHR$(199)
-IF C$ = "T" THEN C$ = CHR$(194)
-IF C$ = "U" THEN C$ = CHR$(181)
-IF C$ = "V" THEN C$ = CHR$(185)
-IF C$ = "W" THEN C$ = CHR$(184)
-IF C$ = "X" THEN C$ = CHR$(208)
-IF C$ = "Y" THEN C$ = CHR$(216)
-IF C$ = "Z" THEN C$ = CHR$(207)
-IF C$ = "0" THEN C$ = CHR$(209)
-IF C$ = "1" THEN C$ = CHR$(211)
-IF C$ = "2" THEN C$ = CHR$(213)
-IF C$ = "3" THEN C$ = CHR$(214)
-IF C$ = "4" THEN C$ = CHR$(182)
-IF C$ = "5" THEN C$ = CHR$(186)
-IF C$ = "6" THEN C$ = CHR$(190)
-IF C$ = "7" THEN C$ = CHR$(201)
-IF C$ = "8" THEN C$ = CHR$(196)
-IF C$ = "9" THEN C$ = CHR$(195)
-IF C$ = "&" THEN C$ = CHR$(169)
-IF C$ = "#" THEN C$ = CHR$(198)
-IF C$ = "[" THEN C$ = CHR$(244)
-IF C$ = "]" THEN C$ = CHR$(245)
-IF C$ = "$" THEN C$ = CHR$(200)
-IF C$ = "!" THEN C$ = CHR$(191)
-IF C$ = "%" THEN C$ = CHR$(168)
-IF C$ = ";" THEN C$ = CHR$(247)
-IF C$ = "^" THEN C$ = CHR$(229)
-IF C$ = "." THEN C$ = CHR$(227)
-IF C$ = "," THEN C$ = CHR$(225)
-IF C$ = ":" THEN C$ = CHR$(231)
-IF C$ = "/" THEN C$ = CHR$(234)
-IF C$ = "(" THEN C$ = CHR$(173)
-IF C$ = ")" THEN C$ = CHR$(171)
-IF C$ = "=" THEN C$ = CHR$(246)
-IF C$ = "+" THEN C$ = CHR$(232)
-IF C$ = CHR$(34) THEN C$ = CHR$(228)
-IF C$ = "\" THEN C$ = CHR$(221)
-IF C$ = "<" THEN C$ = CHR$(238)
-IF C$ = ">" THEN C$ = CHR$(239)
-IF C$ = "?" THEN C$ = CHR$(224)
-IF C$ = "*" THEN C$ = CHR$(170)
-IF C$ = "@" THEN C$ = CHR$(193)
-IF C$ = "-" THEN C$ = CHR$(172)
-IF C$ = "_" THEN C$ = CHR$(240)
-IF C$ = "'" THEN C$ = CHR$(237)
-RETURN
+If C$ = "" Then C$ = Chr$(250)
+If C$ = " " Then C$ = Chr$(32)
+If C$ = "A" Then C$ = Chr$(218)
+If C$ = "B" Then C$ = Chr$(187)
+If C$ = "C" Then C$ = Chr$(197)
+If C$ = "D" Then C$ = Chr$(205)
+If C$ = "E" Then C$ = Chr$(210)
+If C$ = "F" Then C$ = Chr$(204)
+If C$ = "G" Then C$ = Chr$(179)
+If C$ = "H" Then C$ = Chr$(192)
+If C$ = "I" Then C$ = Chr$(180)
+If C$ = "J" Then C$ = Chr$(203)
+If C$ = "K" Then C$ = Chr$(215)
+If C$ = "L" Then C$ = Chr$(206)
+If C$ = "M" Then C$ = Chr$(189)
+If C$ = "N" Then C$ = Chr$(202)
+If C$ = "O" Then C$ = Chr$(212)
+If C$ = "P" Then C$ = Chr$(183)
+If C$ = "Q" Then C$ = Chr$(188)
+If C$ = "R" Then C$ = Chr$(217)
+If C$ = "S" Then C$ = Chr$(199)
+If C$ = "T" Then C$ = Chr$(194)
+If C$ = "U" Then C$ = Chr$(181)
+If C$ = "V" Then C$ = Chr$(185)
+If C$ = "W" Then C$ = Chr$(184)
+If C$ = "X" Then C$ = Chr$(208)
+If C$ = "Y" Then C$ = Chr$(216)
+If C$ = "Z" Then C$ = Chr$(207)
+If C$ = "0" Then C$ = Chr$(209)
+If C$ = "1" Then C$ = Chr$(211)
+If C$ = "2" Then C$ = Chr$(213)
+If C$ = "3" Then C$ = Chr$(214)
+If C$ = "4" Then C$ = Chr$(182)
+If C$ = "5" Then C$ = Chr$(186)
+If C$ = "6" Then C$ = Chr$(190)
+If C$ = "7" Then C$ = Chr$(201)
+If C$ = "8" Then C$ = Chr$(196)
+If C$ = "9" Then C$ = Chr$(195)
+If C$ = "&" Then C$ = Chr$(169)
+If C$ = "#" Then C$ = Chr$(198)
+If C$ = "[" Then C$ = Chr$(244)
+If C$ = "]" Then C$ = Chr$(245)
+If C$ = "$" Then C$ = Chr$(200)
+If C$ = "!" Then C$ = Chr$(191)
+If C$ = "%" Then C$ = Chr$(168)
+If C$ = ";" Then C$ = Chr$(247)
+If C$ = "^" Then C$ = Chr$(229)
+If C$ = "." Then C$ = Chr$(227)
+If C$ = "," Then C$ = Chr$(225)
+If C$ = ":" Then C$ = Chr$(231)
+If C$ = "/" Then C$ = Chr$(234)
+If C$ = "(" Then C$ = Chr$(173)
+If C$ = ")" Then C$ = Chr$(171)
+If C$ = "=" Then C$ = Chr$(246)
+If C$ = "+" Then C$ = Chr$(232)
+If C$ = Chr$(34) Then C$ = Chr$(228)
+If C$ = "\" Then C$ = Chr$(221)
+If C$ = "<" Then C$ = Chr$(238)
+If C$ = ">" Then C$ = Chr$(239)
+If C$ = "?" Then C$ = Chr$(224)
+If C$ = "*" Then C$ = Chr$(170)
+If C$ = "@" Then C$ = Chr$(193)
+If C$ = "-" Then C$ = Chr$(172)
+If C$ = "_" Then C$ = Chr$(240)
+If C$ = "'" Then C$ = Chr$(237)
+Return
 W:
-IF h = 1 AND v = 1 THEN C = C + 1
-IF C = 16 THEN C = 1
-LOCATE v, h: COLOR C: PRINT CHR$(219)
-IF h = 1 AND v = 1 THEN LOCATE 1, 1: PRINT CHR$(201)
-IF v = 1 AND h = 80 THEN LOCATE 1, 80: PRINT CHR$(187)
-IF v = 23 AND h = 80 THEN LOCATE 23, 80: PRINT CHR$(188)
-IF v = 22 AND h = 1 THEN LOCATE 23, 1: PRINT CHR$(200)
-IF h > 1 AND h < 80 THEN LOCATE v, h: PRINT CHR$(205)
-IF v > 1 AND v < 23 THEN LOCATE v, h: PRINT CHR$(186)
-IF hm = 1 THEN h = h + 1
-IF h = 81 THEN hm = 0: vm = 1: h = 80
-IF vm = 1 THEN v = v + 1
-IF v = 24 THEN vm = 0: hm = 2: v = 23
-IF hm = 2 THEN h = h - 1
-IF h = 1 AND v = 23 THEN hm = 0: vm = 2
-IF vm = 2 THEN v = v - 1
-IF v = 1 THEN vm = 0: hm = 1
-RETURN
+If h = 1 And v = 1 Then C = C + 1
+If C = 16 Then C = 1
+Locate v, h: Color C: Print Chr$(219)
+If h = 1 And v = 1 Then Locate 1, 1: Print Chr$(201)
+If v = 1 And h = 80 Then Locate 1, 80: Print Chr$(187)
+If v = 23 And h = 80 Then Locate 23, 80: Print Chr$(188)
+If v = 22 And h = 1 Then Locate 23, 1: Print Chr$(200)
+If h > 1 And h < 80 Then Locate v, h: Print Chr$(205)
+If v > 1 And v < 23 Then Locate v, h: Print Chr$(186)
+If hm = 1 Then h = h + 1
+If h = 81 Then hm = 0: vm = 1: h = 80
+If vm = 1 Then v = v + 1
+If v = 24 Then vm = 0: hm = 2: v = 23
+If hm = 2 Then h = h - 1
+If h = 1 And v = 23 Then hm = 0: vm = 2
+If vm = 2 Then v = v - 1
+If v = 1 Then vm = 0: hm = 1
+Return
 THATIT:
 SKIP = 1
-RESUME NEXT
+Resume Next
 E:
 SKIP = 2
-RESUME NEXT
+Resume Next
 listing:
-FOR B = 1 TO 15: T$(B) = "": D$(B) = "": DE$(B) = "": n$(B) = "": NEXT B
-LOCATE 4, 70: COLOR 29: PRINT "WORKING"
+For B = 1 To 15: T$(B) = "": D$(B) = "": DE$(B) = "": n$(B) = "": Next B
+Locate 4, 70: Color 29: Print "WORKING"
 fil = LISTS - 1
-FOR B = 1 TO number
-fil = fil + 1
-IF fil = reading + 1 THEN GOTO SKIP5:
-fil$ = STRING$(5 - LEN(LTRIM$(STR$((fil)))), "0") + LTRIM$(STR$(fil))
-F$ = TT$ + fil$ + ".LOG"
-OPEN F$ FOR INPUT AS #1
-INPUT #1, D$(B)
-INPUT #1, T$(B)
-INPUT #1, DE$(B)
-CLOSE #1
-NEXT B
+For B = 1 To number
+    fil = fil + 1
+    If fil = reading + 1 Then GoTo SKIP5:
+    fil$ = String$(5 - Len(LTrim$(Str$((fil)))), "0") + LTrim$(Str$(fil))
+    F$ = TT$ + fil$ + ".LOG"
+    Open F$ For Input As #1
+    Input #1, D$(B)
+    Input #1, T$(B)
+    Input #1, DE$(B)
+    Close #1
+Next B
 SKIP5:
-FOR AAA = 1 TO number
-q$ = ""
-FOR B = 1 TO LEN(D$(AAA))
-C$ = MID$(D$(AAA), B, 1)
-GOSUB CHANGECHARACTERSTOWORDS:
-q$ = q$ + C$
-NEXT B
-D$(AAA) = q$
-q$ = ""
-FOR B = 1 TO LEN(T$(AAA))
-C$ = MID$(T$(AAA), B, 1)
-GOSUB CHANGECHARACTERSTOWORDS:
-q$ = q$ + C$
-NEXT B
-T$(AAA) = q$
-q$ = ""
-FOR B = 1 TO LEN(DE$(AAA))
-C$ = MID$(DE$(AAA), B, 1)
-GOSUB CHANGECHARACTERSTOWORDS:
-q$ = q$ + C$
-NEXT B
-DE$(AAA) = q$
-NEXT AAA
+For AAA = 1 To number
+    q$ = ""
+    For B = 1 To Len(D$(AAA))
+        C$ = Mid$(D$(AAA), B, 1)
+        GoSub CHANGECHARACTERSTOWORDS:
+        q$ = q$ + C$
+    Next B
+    D$(AAA) = q$
+    q$ = ""
+    For B = 1 To Len(T$(AAA))
+        C$ = Mid$(T$(AAA), B, 1)
+        GoSub CHANGECHARACTERSTOWORDS:
+        q$ = q$ + C$
+    Next B
+    T$(AAA) = q$
+    q$ = ""
+    For B = 1 To Len(DE$(AAA))
+        C$ = Mid$(DE$(AAA), B, 1)
+        GoSub CHANGECHARACTERSTOWORDS:
+        q$ = q$ + C$
+    Next B
+    DE$(AAA) = q$
+Next AAA
 fil = LISTS - 1
-FOR B = 1 TO number
-fil = fil + 1
-IF fil = reading + 1 THEN GOTO skip6:
-n$(B) = STRING$(5 - LEN(LTRIM$(STR$((fil)))), "0") + LTRIM$(STR$(fil))
-NEXT B
+For B = 1 To number
+    fil = fil + 1
+    If fil = reading + 1 Then GoTo skip6:
+    n$(B) = String$(5 - Len(LTrim$(Str$((fil)))), "0") + LTrim$(Str$(fil))
+Next B
 skip6:
-FOR B = 1 TO 15: COLOR 0, 0: LOCATE B + 5, 2: PRINT STRING$(78, " "): NEXT B
-FOR B = 1 TO number
-COLOR 10: LOCATE 5 + B, 2: PRINT n$(B); TAB(15); DE$(B); TAB(45); D$(B); TAB(60); T$(B)
-NEXT B
-LOCATE 4, 70: PRINT STRING$(9, " ")
-RETURN
+For B = 1 To 15: Color 0, 0: Locate B + 5, 2: Print String$(78, " "): Next B
+For B = 1 To number
+    Color 10: Locate 5 + B, 2: Print n$(B); Tab(15); DE$(B); Tab(45); D$(B); Tab(60); T$(B)
+Next B
+Locate 4, 70: Print String$(9, " ")
+Return
 reading:
 readfile = LISTS + Z - 1
-readfile$ = STRING$(5 - LEN(LTRIM$(STR$((readfile)))), "0") + LTRIM$(STR$(readfile))
-CLS
-LOCATE 2, 2: COLOR 31: PRINT "You are reading..."
-LOCATE 3, 2: COLOR 14: PRINT STRING$(78, 196)
+readfile$ = String$(5 - Len(LTrim$(Str$((readfile)))), "0") + LTrim$(Str$(readfile))
+Cls
+Locate 2, 2: Color 31: Print "You are reading..."
+Locate 3, 2: Color 14: Print String$(78, 196)
 F$ = TT$ + readfile$ + ".LOG"
-OPEN F$ FOR INPUT AS #1
-INPUT #1, D$
-INPUT #1, T$
-INPUT #1, DE$
-FOR B = 1 TO 10
-INPUT #1, l$(B)
-NEXT B
-CLOSE #1
+Open F$ For Input As #1
+Input #1, D$
+Input #1, T$
+Input #1, DE$
+For B = 1 To 10
+    Input #1, l$(B)
+Next B
+Close #1
 q$ = ""
-FOR B = 1 TO LEN(D$)
-C$ = MID$(D$, B, 1)
-GOSUB CHANGECHARACTERSTOWORDS:
-q$ = q$ + C$
-NEXT B
+For B = 1 To Len(D$)
+    C$ = Mid$(D$, B, 1)
+    GoSub CHANGECHARACTERSTOWORDS:
+    q$ = q$ + C$
+Next B
 D$ = q$
 q$ = ""
-FOR B = 1 TO LEN(T$)
-C$ = MID$(T$, B, 1)
-GOSUB CHANGECHARACTERSTOWORDS:
-q$ = q$ + C$
-NEXT B
+For B = 1 To Len(T$)
+    C$ = Mid$(T$, B, 1)
+    GoSub CHANGECHARACTERSTOWORDS:
+    q$ = q$ + C$
+Next B
 T$ = q$
 q$ = ""
-FOR B = 1 TO LEN(DE$)
-C$ = MID$(DE$, B, 1)
-GOSUB CHANGECHARACTERSTOWORDS:
-q$ = q$ + C$
-NEXT B
+For B = 1 To Len(DE$)
+    C$ = Mid$(DE$, B, 1)
+    GoSub CHANGECHARACTERSTOWORDS:
+    q$ = q$ + C$
+Next B
 DE$ = q$
-COLOR 11: LOCATE 4, 2: PRINT readfile$; TAB(15); DE$; TAB(45); D$; TAB(60); T$
-FOR B = 1 TO 10
-P$ = ""
-FOR X = 1 TO 78
-C$ = MID$(l$(B), X, 1)
-GOSUB CHANGECHARACTERSTOWORDS:
-P$ = P$ + C$
-NEXT X
-l$(B) = P$
-NEXT B
-COLOR 14: LOCATE 5, 2: PRINT STRING$(78, 196)
-LOCATE 16, 2: PRINT STRING$(78, 196)
-COLOR 7
-FOR B = 1 TO 10
-LOCATE B + 5, 2: PRINT l$(B)
-NEXT B
-LOCATE 20, 2: COLOR 31: PRINT "PRESS "; CHR$(34); "ESC"; CHR$(34); " TO BACK UP"
-DO
-'gosub w:
-LOOP UNTIL INKEY$ = CHR$(27)
-CLS
-GOSUB listing:
-RETURN
+Color 11: Locate 4, 2: Print readfile$; Tab(15); DE$; Tab(45); D$; Tab(60); T$
+' Append log ID, diary entry title, date string, and time string to decrypted log file.
+Open DLF$ For Append As #1
+Print #1, "Diary entry: "; readfile$
+Print #1, "Title: "; DE$
+Print #1, "Date: "; D$
+Print #1, "Time: "; T$
+Print #1, ""
+Close #1
+For B = 1 To 10
+    P$ = ""
+    For X = 1 To 78
+        C$ = Mid$(l$(B), X, 1)
+        GoSub CHANGECHARACTERSTOWORDS:
+        P$ = P$ + C$
+    Next X
+    l$(B) = P$
+Next B
+Color 14: Locate 5, 2: Print String$(78, 196)
+Locate 16, 2: Print String$(78, 196)
+Color 7
+' Open decrypted log file to append decrypted log entry.
+Open DLF$ For Append As #1
 
+For B = 1 To 10
+    Locate B + 5, 2: Print l$(B)
+
+    ' Append decrypted log entry to decrypted log file.
+    Print #1, l$(B)
+Next B
+Print #1, ""
+
+' Append blank line to decrypted log file.
+Close #1
+
+Locate 20, 2: Color 31: Print "PRESS "; Chr$(34); "ESC"; Chr$(34); " TO BACK UP"
+Do
+    'gosub w:
+
+    ' Automate "ESC" to continue reading logs.
+    K$ = InKey$
+    K$ = Chr$(27)
+Loop Until K$ = Chr$(27)
+Cls
+GoSub listing:
+Return
