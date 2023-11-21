@@ -1,12 +1,21 @@
 Screen 0, 0, 0: Width 80: Cls: Beep
 Locate , , , 5
 h = 1: v = 1: C = 0: hm = 1: vm = 0: CAP$ = "": l = 1
-Dim LIN$(15), CH$(780), l$(10), D$(15), T$(15), DE$(15), DIT$(25), n$(15)
+' Dim LIN$(15),
+Dim CH$(780), l$(10), D$(15), T$(15), DE$(15), DIT$(25), n$(15)
 Cls
 Print "Enter Password, please?"
 SKIP2:
 ' TT$ = "F:\GREGOR~1\DIARY.LOG\GREGORY\GDD" 'Example
 TT$ = "C:\Users\Ethan\Documents\GitHub\DIARY.LOG\GREGORY\GDD"
+' Decrypted log file name.
+DLF$ = "C:\Users\Ethan\Documents\GitHub\DIARY.LOG\2023\DECRYPTED.TXT"
+
+' Clear the decrypted log file.
+Open DLF$ For Output As #1
+Print #1, ""
+Close #1
+
 LOG_INDEX = 0
 STOP_AT_INDEX = 59
 JUMP:
@@ -96,10 +105,8 @@ Do
         ' Automate program end.
         A$ = Chr$(27)
     End If
-
 Loop Until A$ = Chr$(27) Or A$ = Chr$(13)
 If A$ = Chr$(27) Then Stop
-R$ = "N"
 If A$ = Chr$(13) Then R$ = "Y": GoSub reading:
 If R$ = "Y" Then GoTo RERUN
 
@@ -471,6 +478,14 @@ For B = 1 To Len(DE$)
 Next B
 DE$ = q$
 Color 11: Locate 4, 2: Print readfile$; Tab(15); DE$; Tab(45); D$; Tab(60); T$
+' Append log ID, diary entry title, date string, and time string to decrypted log file.
+Open DLF$ For Append As #1
+Print #1, "Diary entry: "; readfile$
+Print #1, "Title: "; DE$
+Print #1, "Date: "; D$
+Print #1, "Time: "; T$
+Print #1, ""
+Close #1
 For B = 1 To 10
     P$ = ""
     For X = 1 To 78
@@ -483,11 +498,20 @@ Next B
 Color 14: Locate 5, 2: Print String$(78, 196)
 Locate 16, 2: Print String$(78, 196)
 Color 7
-' Print l$ to readfile$ + ".TXT"
-Open F$ For Input As #1
+' Open decrypted log file to append decrypted log entry.
+Open DLF$ For Append As #1
+
 For B = 1 To 10
     Locate B + 5, 2: Print l$(B)
+
+    ' Append decrypted log entry to decrypted log file.
+    Print #1, l$(B)
 Next B
+Print #1, ""
+
+' Append blank line to decrypted log file.
+Close #1
+
 Locate 20, 2: Color 31: Print "PRESS "; Chr$(34); "ESC"; Chr$(34); " TO BACK UP"
 Do
     'gosub w:
